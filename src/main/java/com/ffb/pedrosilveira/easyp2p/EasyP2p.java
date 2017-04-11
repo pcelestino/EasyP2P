@@ -935,6 +935,17 @@ public class EasyP2p implements WifiP2pManager.ConnectionInfoListener {
         }
     }
 
+    public boolean isLeader() {
+        boolean isLeader = true;
+
+        for (EasyP2pDevice device : registeredClients) {
+            if (device.id > thisDevice.id) {
+                isLeader = false;
+            }
+        }
+        return isLeader;
+    }
+
     public void informLeader(EasyP2pCallback onSuccess, EasyP2pCallback onFailure) {
 
         BullyElection bullyElection = new BullyElection();
@@ -955,10 +966,24 @@ public class EasyP2p implements WifiP2pManager.ConnectionInfoListener {
         for (EasyP2pDevice client : filteredListClients) {
             sendData(client, bullyElection, onSuccess, onFailure);
         }
+
+        // Informa o host
+        sendData(registeredHost, bullyElection, onSuccess, onFailure);
     }
 
     private void sendDataSync(ExecutorService executorService, EasyP2pDevice device, Object data, @Nullable EasyP2pCallback onSuccess, @Nullable EasyP2pCallback onFailure) {
         BackgroundDataSendJob sendDataToDevice = new BackgroundDataSendJob(device, EasyP2p.this, data, onSuccess, onFailure);
         AsyncJob.doInBackground(sendDataToDevice, executorService);
+    }
+
+    public void updateLeaderReference(EasyP2pDevice leader, @Nullable EasyP2pCallback onSuccess) {
+        for (EasyP2pDevice registeredClient : registeredClients) {
+            if (registeredClient.id == leader.id) {
+                registeredClient.isLeader = true;
+                if (onSuccess != null)
+                    onSuccess.call();
+                break;
+            }
+        }
     }
 }

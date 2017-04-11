@@ -26,6 +26,8 @@ public class EasyP2pDevice {
     @JsonField
     public boolean isRegistered;
     @JsonField
+    public boolean isLeader;
+    @JsonField
     protected int servicePort;
     @JsonField
     protected String TTP = "._tcp.";
@@ -35,8 +37,6 @@ public class EasyP2pDevice {
     protected String serviceAddress;
     @JsonField
     protected boolean isHost;
-    @JsonField
-    protected boolean isLeader;
 
     public EasyP2pDevice() {
     }
