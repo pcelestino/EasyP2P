@@ -34,40 +34,44 @@ public class BackgroundDataSendJob implements AsyncJob.OnBackgroundJob {
     @Override
     public void doOnBackground() {
 
-        Log.d(EasyP2p.TAG, "\nTentando enviar dados para um dispositivo.");
-        Socket dataSocket = new Socket();
+        if (device.serviceAddress != null) {
+            Log.d(EasyP2p.TAG, "\nTentando enviar dados para um dispositivo.");
+            Socket dataSocket = new Socket();
 
-        try {
-            dataSocket.connect(new InetSocketAddress(device.serviceAddress, device.servicePort));
-            dataSocket.setReceiveBufferSize(BUFFER_SIZE);
-            dataSocket.setSendBufferSize(BUFFER_SIZE);
-
-            //If this code is reached, a client has connected and transferred data.
-            Log.d(EasyP2p.TAG, "Conectado, transferindo dados...");
-            BufferedOutputStream dataStreamToOtherDevice = new BufferedOutputStream(dataSocket.getOutputStream());
-
-            String dataToSend = LoganSquare.serialize(data);
-
-            dataStreamToOtherDevice.write(dataToSend.getBytes(Charsets.UTF_8));
-            dataStreamToOtherDevice.flush();
-            dataStreamToOtherDevice.close();
-
-            Log.d(EasyP2p.TAG, "Dados enviados com êxito.");
-            if (onSuccess != null)
-                onSuccess.call();
-
-        } catch (Exception ex) {
-            Log.d(EasyP2p.TAG, "Ocorreu um erro ao enviar dados para um dispositivo.");
-            if (onFailure != null)
-                onFailure.call();
-            ex.printStackTrace();
-        } finally {
             try {
-                dataSocket.close();
-            } catch (Exception ex) {
-                Log.e(EasyP2p.TAG, "Falha ao fechar o socket de dados.");
-            }
+                dataSocket.connect(new InetSocketAddress(device.serviceAddress, device.servicePort));
+                dataSocket.setReceiveBufferSize(BUFFER_SIZE);
+                dataSocket.setSendBufferSize(BUFFER_SIZE);
 
+                //If this code is reached, a client has connected and transferred data.
+                Log.d(EasyP2p.TAG, "Conectado, transferindo dados...");
+                BufferedOutputStream dataStreamToOtherDevice = new BufferedOutputStream(dataSocket.getOutputStream());
+
+                String dataToSend = LoganSquare.serialize(data);
+
+                dataStreamToOtherDevice.write(dataToSend.getBytes(Charsets.UTF_8));
+                dataStreamToOtherDevice.flush();
+                dataStreamToOtherDevice.close();
+
+                Log.d(EasyP2p.TAG, "Dados enviados com êxito.");
+                if (onSuccess != null)
+                    onSuccess.call();
+
+            } catch (Exception ex) {
+                Log.d(EasyP2p.TAG, "Ocorreu um erro ao enviar dados para um dispositivo.");
+                if (onFailure != null)
+                    onFailure.call();
+                ex.printStackTrace();
+            } finally {
+                try {
+                    dataSocket.close();
+                } catch (Exception ex) {
+                    Log.e(EasyP2p.TAG, "Falha ao fechar o socket de dados.");
+                }
+
+            }
+        } else {
+            Log.d(EasyP2p.TAG, "SERVICE ADDRES NULL: " + device.readableName);
         }
     }
 }

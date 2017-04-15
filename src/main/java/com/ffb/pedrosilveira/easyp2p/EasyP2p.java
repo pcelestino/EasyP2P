@@ -24,6 +24,7 @@ import com.arasthel.asyncjob.AsyncJob;
 import com.ffb.pedrosilveira.easyp2p.callbacks.EasyP2pCallback;
 import com.ffb.pedrosilveira.easyp2p.callbacks.EasyP2pDeviceCallback;
 import com.ffb.pedrosilveira.easyp2p.payloads.bully.BullyElection;
+import com.ffb.pedrosilveira.easyp2p.payloads.device.DeviceInfo;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -64,6 +65,7 @@ public class EasyP2p implements WifiP2pManager.ConnectionInfoListener {
 
     public EasyP2pDevice thisDevice;
     public EasyP2pDevice registeredHost;
+    public EasyP2pDevice registeredLeader;
     public boolean isRunningAsHost = false;
     public boolean isConnectedToAnotherDevice = false;
     public boolean isDiscovering = false;
@@ -911,12 +913,14 @@ public class EasyP2p implements WifiP2pManager.ConnectionInfoListener {
                     new EasyP2pCallback() {
                         @Override
                         public void call() {
-                            onSuccess.call(client);
+                            if (onSuccess != null)
+                                onSuccess.call(client);
                         }
                     }, new EasyP2pCallback() {
                         @Override
                         public void call() {
-                            onFailure.call(client);
+                            if (onFailure != null)
+                                onFailure.call(client);
                         }
                     });
         }
@@ -985,5 +989,32 @@ public class EasyP2p implements WifiP2pManager.ConnectionInfoListener {
                 break;
             }
         }
+    }
+
+    public void removeDeviceReference(EasyP2pDevice device, @Nullable EasyP2pCallback onSuccess) {
+        for (EasyP2pDevice registeredClient : registeredClients) {
+            if (registeredClient.id == device.id) {
+                registeredClients.remove(registeredClient);
+                if (onSuccess != null)
+                    onSuccess.call();
+                break;
+            }
+        }
+    }
+
+    public void informRemoveDeviceReference(EasyP2pDevice device, @Nullable EasyP2pCallback onSuccess) {
+        // Remove a referencia do device em todos os clientes e no host
+        DeviceInfo deviceInfo = new DeviceInfo();
+        deviceInfo.message = DeviceInfo.REMOVE_DEVICE;
+        deviceInfo.device = device;
+        this.sendToAllDevices(deviceInfo, null, null);
+        this.sendToHost(deviceInfo, null, null);
+
+        if (onSuccess != null)
+            onSuccess.call();
+    }
+
+    public void sendToLeader(Object data, @Nullable EasyP2pCallback onSuccess, @Nullable EasyP2pCallback onFailure) {
+        sendData(registeredLeader, data, onSuccess, onFailure);
     }
 }

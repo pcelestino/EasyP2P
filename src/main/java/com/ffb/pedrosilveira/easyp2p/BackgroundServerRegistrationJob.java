@@ -39,6 +39,7 @@ public class BackgroundServerRegistrationJob implements AsyncJob.OnBackgroundJob
 
                 Log.v(EasyP2p.TAG, "Sending server registration data...");
                 DeviceInfo deviceInfo = new DeviceInfo();
+                deviceInfo.message = clientDevice.serviceAddress;
                 deviceInfo.device = easyP2pInstance.thisDevice;
                 deviceInfo.devices = easyP2pInstance.registeredClients;
 

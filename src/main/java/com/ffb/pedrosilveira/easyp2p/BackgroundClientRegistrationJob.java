@@ -60,6 +60,7 @@ public class BackgroundClientRegistrationJob implements AsyncJob.OnBackgroundJob
                 DeviceInfo serverDeviceInfo = LoganSquare.parse(registrationSocket.getInputStream(), DeviceInfo.class);
 
                 serverDeviceInfo.device.serviceAddress = registrationSocket.getInetAddress().toString().replace("/", "");
+                easyP2pInstance.thisDevice.serviceAddress = serverDeviceInfo.message;
                 easyP2pInstance.registeredHost = serverDeviceInfo.device;
                 easyP2pInstance.registeredClients = serverDeviceInfo.devices;
 
