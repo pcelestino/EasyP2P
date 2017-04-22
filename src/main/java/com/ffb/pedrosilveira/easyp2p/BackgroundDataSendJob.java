@@ -6,6 +6,7 @@ import android.util.Log;
 import com.arasthel.asyncjob.AsyncJob;
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.ffb.pedrosilveira.easyp2p.callbacks.EasyP2pCallback;
+import com.ffb.pedrosilveira.easyp2p.payloads.bully.BullyElection;
 
 import org.apache.commons.io.Charsets;
 
@@ -39,7 +40,7 @@ public class BackgroundDataSendJob implements AsyncJob.OnBackgroundJob {
             Socket dataSocket = new Socket();
 
             try {
-                dataSocket.connect(new InetSocketAddress(device.serviceAddress, device.servicePort));
+                dataSocket.connect(new InetSocketAddress(device.serviceAddress, device.servicePort), BullyElection.TIMEOUT);
                 dataSocket.setReceiveBufferSize(BUFFER_SIZE);
                 dataSocket.setSendBufferSize(BUFFER_SIZE);
 

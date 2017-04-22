@@ -5,13 +5,12 @@ import android.util.Log;
 import com.arasthel.asyncjob.AsyncJob;
 import com.bluelinelabs.logansquare.LoganSquare;
 import com.ffb.pedrosilveira.easyp2p.callbacks.EasyP2pCallback;
+import com.ffb.pedrosilveira.easyp2p.payloads.bully.BullyElection;
 import com.ffb.pedrosilveira.easyp2p.payloads.device.DeviceInfo;
 
 import org.apache.commons.io.Charsets;
 
 import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -40,7 +39,7 @@ public class BackgroundClientRegistrationJob implements AsyncJob.OnBackgroundJob
         Socket registrationSocket = new Socket();
 
         try {
-            registrationSocket.connect(hostDeviceAddress);
+            registrationSocket.connect(hostDeviceAddress, BullyElection.TIMEOUT);
             registrationSocket.setReceiveBufferSize(BUFFER_SIZE);
             registrationSocket.setSendBufferSize(BUFFER_SIZE);
 

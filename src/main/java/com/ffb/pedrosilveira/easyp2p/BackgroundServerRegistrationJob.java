@@ -9,8 +9,6 @@ import com.ffb.pedrosilveira.easyp2p.payloads.device.DeviceInfo;
 import org.apache.commons.io.Charsets;
 
 import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.net.Socket;
 
 @SuppressWarnings("WeakerAccess")
